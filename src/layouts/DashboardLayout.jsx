@@ -23,7 +23,7 @@ const DashboardLayout = () => {
   return (
     <div className="min-h-screen bg-[#111111]">
       <Navbar />
-      <main className="px-4 md:px-8 py-6">
+      <main className="px-1 md:px-8 ">
         <Outlet />
       </main>
     </div>
