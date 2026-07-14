@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { IconShare3 } from '@tabler/icons-react';
@@ -12,19 +12,28 @@ import {
 } from 'lucide-react';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useDisconnect, useAccount } from 'wagmi';
+import ReferModal from '../../pages/Landing/ReferModal';
+
 
 const Navbar = () => {
   const { disconnect } = useDisconnect();
   const { address, isConnected } = useAccount();
   const location = useLocation();
   const navigate = useNavigate();
+  const [isReferModalOpen, setIsReferModalOpen] = useState(false); // ✅ Modal state
 
-  // ✅ NAV ITEMS - SAHI PATHS (DashboardRoutes ke hisaab se)
+  // ✅ NAV ITEMS
   const navItems = [
     { id: 'DASHBOARD', label: 'Dashboard', path: '/dashboard', icon: <LayoutDashboard size={16} /> },
     { id: 'REFER', label: 'Refer', path: '/dashboard/refer', icon: <IconShare3 size={16} stroke={2} /> },
     { id: 'HISTORY', label: 'History', path: '/dashboard/history', icon: <History size={16} /> },
   ];
+
+  // ✅ Handle Refer Click - Modal open karega
+  const handleReferClick = (e) => {
+    e.preventDefault();
+    setIsReferModalOpen(true);
+  };
 
   // Agar connected hai toh dashboard pe bhejo
   useEffect(() => {
@@ -75,6 +84,33 @@ const Navbar = () => {
         <div className="hidden md:flex items-center gap-1 lg:gap-2">
           {navItems.map((item) => {
             const isActive = location.pathname === item.path;
+            
+            // ✅ Refer link ke liye special handler
+            if (item.id === 'REFER') {
+              return (
+                <button
+                  key={item.id}
+                  onClick={handleReferClick}
+                  className={`relative py-2 px-3 lg:px-4 rounded-lg font-display text-[13px] font-bold tracking-wider transition-all cursor-pointer flex items-center gap-2
+                    ${location.pathname === '/dashboard/refer'
+                      ? 'text-amber-500 bg-amber-500/10'
+                      : 'text-white hover:text-amber-500 hover:bg-zinc-900/50'
+                    }`}
+                >
+                  {item.icon}
+                  <span className={location.pathname === '/dashboard/refer' ? 'text-amber-500' : 'text-white'}>
+                    {item.label}
+                  </span>
+                  {location.pathname === '/dashboard/refer' && (
+                    <motion.div
+                      layoutId="dashboardNavUnderline"
+                      className="absolute bottom-0 left-1/2 -translate-x-1/2 w-8 h-[2.5px] bg-amber-500 rounded-full"
+                      transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                    />
+                  )}
+                </button>
+              );
+            }
 
             return (
               <Link
@@ -136,7 +172,6 @@ const Navbar = () => {
                       <div className="h-8 w-8 rounded-lg bg-green-500/10 text-green-400 flex items-center justify-center">
                         <CheckCircle size={14} />
                       </div>
-                      {/* ✅ MOBILE ME BHI ADDRESS DIKHEGA */}
                       <div className="text-left leading-none">
                         <span className="text-[10px] text-zinc-400 font-mono block">
                           Connected
@@ -163,10 +198,37 @@ const Navbar = () => {
         </div>
       </nav>
 
-      {/* ✅ Mobile Bottom Navigation - FIXED */}
+      {/* ✅ Mobile Bottom Navigation - Refer Modal open karega */}
       <div className="md:hidden fixed bottom-4 left-4 right-4 bg-black/90 backdrop-blur-lg border border-zinc-800 rounded-2xl px-4 py-3 flex items-center justify-around shadow-2xl z-50">
         {navItems.map((item) => {
           const isActive = location.pathname === item.path;
+
+          // ✅ Refer button - Modal open karega
+          if (item.id === 'REFER') {
+            return (
+              <button
+                key={item.id}
+                onClick={handleReferClick}
+                className={`flex flex-col items-center gap-0.5 min-w-[44px] transition-all ${
+                  location.pathname === '/dashboard/refer' ? 'text-amber-500' : 'text-zinc-500 hover:text-zinc-300'
+                }`}
+              >
+                <span className="text-[18px]">{item.icon}</span>
+                <span className={`text-[9px] font-bold font-display tracking-wider ${
+                  location.pathname === '/dashboard/refer' ? 'text-amber-500' : 'text-zinc-500'
+                }`}>
+                  {item.label}
+                </span>
+                {location.pathname === '/dashboard/refer' && (
+                  <motion.div
+                    layoutId="mobileNavIndicator"
+                    className="w-4 h-0.5 bg-amber-500 rounded-full mt-0.5"
+                    transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                  />
+                )}
+              </button>
+            );
+          }
 
           return (
             <Link
@@ -193,6 +255,14 @@ const Navbar = () => {
           );
         })}
       </div>
+
+      {/* ✅ Refer Modal */}
+      <ReferModal
+        isOpen={isReferModalOpen}
+        onClose={() => setIsReferModalOpen(false)}
+        referralCode="ApexMindAi"
+        userAddress={address}
+      />
     </>
   );
 };
