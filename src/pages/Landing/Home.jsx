@@ -135,7 +135,7 @@ const Hero = ({ onGetStarted, isConnected }) => {
                 </span>
                 <br />
                 <span className="bg-gradient-to-r from-amber-400 via-amber-500 to-orange-500 bg-clip-text text-transparent drop-shadow-[0_0_40px_rgba(245,158,11,0.15)]">
-                  with Risk Protection
+                  Financial Ecosystem
                 </span>
               </h1>
             </motion.div>
