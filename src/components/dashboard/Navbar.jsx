@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useDisconnect, useAccount } from 'wagmi';
-import ReferModal from '../../pages/Landing/ReferModal';
+import ReferModal from '../../pages/Dashboard/Refer';
 
 
 const Navbar = () => {

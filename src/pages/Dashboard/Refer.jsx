@@ -1,166 +1,151 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { motion } from 'framer-motion';
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
+import { 
+  X, 
+  Share2, 
+  Copy, 
+  Check, 
+  Users,
+  Gift
+} from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 
-const Refer = () => {
+const ReferModal = ({ isOpen, onClose, referralCode = 'FRT', userAddress = '' }) => {
   const [copied, setCopied] = useState(false);
-  const referralLink = 'https://frt.io/ref/your-code';
+  
+  const referralLink = `http://FRT/signup?ref=FRT`;
+  const totalEarnings = 738.066;
+  const totalReferrals = 12;
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(referralLink);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+  const handleCopyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(referralLink);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy:', err);
+    }
   };
 
-  // Animation variants - sab top se aayenge
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.15,
-        delayChildren: 0.1,
-      },
-    },
-  };
-
-  const itemVariants = {
-    hidden: {
-      opacity: 0,
-      y: -60,
-      scale: 0.95,
-    },
-    visible: {
-      opacity: 1,
-      y: 0,
-      scale: 1,
-      transition: {
-        type: 'spring',
-        stiffness: 120,
-        damping: 15,
-        duration: 0.6,
-      },
-    },
-  };
-
-  const glowVariants = {
-    hidden: { opacity: 0, scale: 0.8 },
-    visible: {
-      opacity: 1,
-      scale: 1,
-      transition: {
-        delay: 0.4,
-        duration: 0.7,
-        type: 'spring',
-        stiffness: 100,
-      },
-    },
+  const handleShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'Join FRT Finance',
+          text: `Join FRT Finance with my referral link: ${referralLink}`,
+          url: referralLink,
+        });
+      } catch (err) {
+        console.error('Share failed:', err);
+      }
+    } else {
+      handleCopyLink();
+    }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-zinc-950 via-zinc-900 to-black flex items-center justify-center p-4 sm:p-6">
-      <motion.div
-        initial="hidden"
-        animate="visible"
-        variants={containerVariants}
-        className="w-full max-w-2xl bg-zinc-900/70 backdrop-blur-xl border border-zinc-800/60 rounded-3xl p-6 sm:p-10 shadow-2xl shadow-amber-500/5"
-      >
-        {/* Heading - top se aayega */}
-        <motion.div variants={itemVariants} className="flex items-center gap-3 mb-2">
-          <motion.span
-            initial={{ rotate: -30, scale: 0 }}
-            animate={{ rotate: 0, scale: 1 }}
-            transition={{ delay: 0.3, type: 'spring', stiffness: 200 }}
-            className="text-3xl"
+    <AnimatePresence>
+      {isOpen && (
+        <>
+          {/* Backdrop */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={onClose}
+            className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100]"
+          />
+
+          {/* Modal - Top se aayega */}
+          <motion.div
+            initial={{ opacity: 0, y: -100 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -100 }}
+            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+            className="fixed inset-0 z-[101] flex items-start justify-center p-4 pt-16"
+            onClick={(e) => e.stopPropagation()}
           >
-
-          </motion.span>
-          <h1 className="text-4xl sm:text-5xl font-extrabold bg-gradient-to-r from-amber-400 via-amber-500 to-orange-400 bg-clip-text text-transparent">
-            Refer & Earn
-          </h1>
-        </motion.div>
-
-        {/* Subtitle - top se aayega */}
-        <motion.p
-          variants={itemVariants}
-          className="text-zinc-400 text-sm sm:text-base mb-6 ml-1"
-        >
-          Share your referral link and earn rewards with every sign-up!
-        </motion.p>
-
-        {/* Main card - QR + Link - top se aayega */}
-        <motion.div
-          variants={itemVariants}
-          className="bg-zinc-800/40 border border-zinc-700/60 rounded-2xl p-5 sm:p-7"
-        >
-          <div className="flex flex-col md:flex-row items-center gap-6 md:gap-8">
-    
-            <motion.div
-              variants={glowVariants}
-              className="flex-shrink-0 bg-white p-3 rounded-2xl shadow-lg shadow-amber-500/10 border-2 border-amber-500/20"
-            >
-              <QRCodeSVG
-                value={referralLink}
-                size={130}
-                bgColor="#ffffff"
-                fgColor="#1a1a1a"
-                level="H"
-                includeMargin={false}
-                imageSettings={{
-                  src: 'https://cdn-icons-png.flaticon.com/512/25/25231.png',
-                  height: 28,
-                  width: 28,
-                  excavate: true,
-                }}
-              />
-            </motion.div>
-
-            {/* Link + Copy Button */}
-            <div className="flex-1 w-full space-y-4">
-              <div className="bg-zinc-900/80 border border-zinc-700 rounded-xl p-3 sm:p-4 relative group">
-                <code className="text-amber-400 text-sm sm:text-base font-mono break-all">
-                  {referralLink}
-                </code>
-                <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-amber-500/0 via-amber-500/5 to-amber-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <div className="w-full max-w-md bg-[#141416] border border-zinc-800 rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto">
+              
+              {/* Header */}
+              <div className="flex items-center justify-between p-4 border-b border-zinc-800">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-500/30 flex items-center justify-center">
+                    <Users className="w-5 h-5 text-amber-500" />
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-bold text-white">Invite Friends</h2>
+                    <p className="text-xs text-zinc-400">Earn rewards with referrals</p>
+                  </div>
+                </div>
+                <button
+                  onClick={onClose}
+                  className="p-2 rounded-lg hover:bg-zinc-800/50 text-zinc-400 hover:text-white transition-all"
+                >
+                  <X size={20} />
+                </button>
               </div>
 
-              <motion.button
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={handleCopy}
-                className={`w-full flex items-center justify-center gap-2 font-bold px-6 py-3.5 rounded-xl transition-all duration-300 text-sm sm:text-base ${
-                  copied
-                    ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30'
-                    : 'bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-orange-400 text-zinc-950 shadow-lg shadow-amber-500/25 hover:shadow-amber-500/40'
-                }`}
-              >
-                {copied ? (
-                  <>
-                    <i className="fas fa-check-circle" /> Copied!
-                  </>
-                ) : (
-                  <>
-                    <i className="fas fa-copy" /> Copy Link
-                  </>
-                )}
-              </motion.button>
+              {/* QR Code */}
+              <div className="p-6 flex flex-col items-center border-b border-zinc-800/50">
+                <div className="bg-white p-4 rounded-xl mb-3">
+                  <QRCodeSVG 
+                    value={referralLink}
+                    size={180}
+                    level="H"
+                    includeMargin={true}
+                  />
+                </div>
+                <p className="text-xs text-zinc-400 text-center">
+                  Scan QR code to invite friends
+                </p>
+              </div>
+
+              {/* Referral Link */}
+              <div className="p-4">
+                <div className="flex items-center gap-2 bg-zinc-900/50 rounded-xl border border-zinc-800 p-2">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[10px] text-zinc-400 font-medium">Referral Link</p>
+                    <p className="text-xs text-white font-mono truncate">
+                      {referralLink}
+                    </p>
+                  </div>
+                  <button
+                    onClick={handleCopyLink}
+                    className="p-2 rounded-lg bg-zinc-800 hover:bg-zinc-700 transition-all text-zinc-300 hover:text-white"
+                  >
+                    {copied ? <Check size={16} className="text-emerald-400" /> : <Copy size={16} />}
+                  </button>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="grid grid-cols-2 gap-3 mt-3">
+                  <button
+                    onClick={handleShare}
+                    className="flex items-center justify-center gap-2 bg-amber-500 hover:bg-amber-600 active:scale-95 text-zinc-950 font-bold text-sm px-4 py-2.5 rounded-xl transition-all"
+                  >
+                    <Share2 size={16} />
+                    Share
+                  </button>
+                  <button
+                    onClick={handleCopyLink}
+                    className="flex items-center justify-center gap-2 bg-zinc-800 hover:bg-zinc-700 active:scale-95 text-white font-bold text-sm px-4 py-2.5 rounded-xl transition-all"
+                  >
+                    {copied ? <Check size={16} className="text-emerald-400" /> : <Copy size={16} />}
+                    {copied ? 'Copied!' : 'Copy Link'}
+                  </button>
+                </div>
+                
+            
+              </div>
+              <p className='text-xs text-zinc-400 text-white p-3 text-center'>Scan QR code or share link to invite friends</p>
             </div>
-          </div>
-        </motion.div>
-
-
-
-
-        {/* Decorative animated glow - background me */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 0.4, scale: 1 }}
-          transition={{ delay: 0.6, duration: 1.5, repeat: Infinity, repeatType: 'mirror' }}
-          className="absolute -z-10 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-amber-500/20 rounded-full blur-3xl"
-        />
-      </motion.div>
-    </div>
+            
+          </motion.div>
+        </>
+      )}
+    </AnimatePresence>
   );
 };
 
-export default Refer;
+export default ReferModal;
