@@ -69,11 +69,6 @@ const Navbar = () => {
           <span className="font-display text-2xl md:text-3xl font-black tracking-wider text-amber-500 drop-shadow-[0_0_8px_rgba(245,158,11,0.2)]">
             FRT
           </span>
-          {isConnected && (
-            <span className="hidden sm:inline-block text-[10px] font-mono text-white bg-zinc-900/50 px-2 py-0.5 rounded-md border border-zinc-800">
-              {address?.slice(0, 6)}...{address?.slice(-4)}
-            </span>
-          )}
         </div>
 
         {/* Middle: Navigation Links - Desktop */}
