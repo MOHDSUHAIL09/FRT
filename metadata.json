@@ -1,0 +1,6 @@
+{
+  "name": "ETHAN DeFi Ecosystem",
+  "description": "A high-fidelity Web3 Integrated Financial Ecosystem landing page and interactive dashboard, including staking, bonding, and registration modules based on the algorithmic non-stable currency ETN.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
