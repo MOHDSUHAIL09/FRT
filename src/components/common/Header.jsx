@@ -1,19 +1,17 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
-import { Wallet, LogOut, CheckCircle, Menu, X } from 'lucide-react';
+import { Wallet, LogOut, CheckCircle, Menu, X, ChevronRight } from 'lucide-react';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useAccount } from 'wagmi';
 
-import logo from '../../assets/img/logo/logo.png'
+import logo from '../../assets/img/logo/logo.png';
 
 const Header = () => {
   const { isConnected } = useAccount();
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  
 
-  // ✅ Tumhara navItems - yahi logic rahega
   const navItems = [
     { id: 'HOME', label: 'Home', path: '/' },
     { id: 'FEATURES', label: 'Features', path: '/features' },
@@ -22,13 +20,11 @@ const Header = () => {
     { id: 'CONTACT', label: 'Contact', path: '/contact' }
   ];
 
-  // ✅ Mobile menu toggle
   const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
   const closeMobileMenu = () => setIsMobileMenuOpen(false);
 
   return (
     <header id="home">
-      {/* Sticky Header */}
       <div id="sticky-header" className="tg-header__area transparent-header">
         <div className="container">
           <div className="row">
@@ -38,17 +34,18 @@ const Header = () => {
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
-                  width: '100%'
+                  width: '100%',
+                  padding: '10px 0'
                 }}>
 
                   {/* Logo - Left */}
                   <div className="logo" style={{ flexShrink: 0 }}>
                     <Link to={isConnected ? '/dashboard' : '/'}>
-                      <img src={logo} alt="Logo" />
+                      <img src={logo} alt="Logo" style={{ height: '40px' }} />
                     </Link>
                   </div>
 
-                  {/* ✅ Desktop Navigation - Center (Mobile me hide) */}
+                  {/* Desktop Navigation - Center */}
                   <div className="tgmenu__navbar-wrap tgmenu__main-menu d-none d-lg-flex" style={{
                     flex: 1,
                     display: 'flex',
@@ -72,7 +69,10 @@ const Header = () => {
                               onClick={closeMobileMenu}
                               style={{
                                 color: isActive ? '#1c85ea' : '#ffffff',
-                                fontWeight: isActive ? 'bold' : 'normal'
+                                fontWeight: isActive ? 'bold' : 'normal',
+                                textDecoration: 'none',
+                                padding: '8px 16px',
+                                transition: 'color 0.3s ease'
                               }}
                             >
                               {item.label}
@@ -163,13 +163,17 @@ const Header = () => {
                   </div>
 
                   {/* Mobile Toggle Button */}
-                  <div className="mobile-nav-toggler" onClick={toggleMobileMenu} style={{
-                    cursor: 'pointer',
-                    padding: '8px',
-                    color: '#fff',
-                    display: 'none'
-                  }}>
-                    {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                  <div 
+                    className="mobile-nav-toggler" 
+                    onClick={toggleMobileMenu} 
+                    style={{
+                      cursor: 'pointer',
+                      padding: '8px',
+                      color: '#fff',
+                      display: 'none'
+                    }}
+                  >
+                    <Menu size={28} />
                   </div>
 
                 </nav>
@@ -179,21 +183,24 @@ const Header = () => {
         </div>
       </div>
 
-      {/* ✅ Mobile Sidebar with Animation - Blue Theme */}
-      <AnimatePresence>
+      {/* ✅ Premium Mobile Sidebar */}
+      <AnimatePresence mode="wait">
         {isMobileMenuOpen && (
           <>
-            {/* Backdrop */}
+            {/* Backdrop with blur */}
             <motion.div
               className="tgmobile__menu-backdrop"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
               onClick={closeMobileMenu}
               style={{
                 position: 'fixed',
                 inset: 0,
-                background: 'rgba(0,0,0,0.7)',
+                background: 'rgba(0,0,0,0.85)',
+                backdropFilter: 'blur(8px)',
+                WebkitBackdropFilter: 'blur(8px)',
                 zIndex: 998
               }}
             />
@@ -201,85 +208,146 @@ const Header = () => {
             {/* Sidebar */}
             <motion.div
               className="tgmobile__menu"
-              initial={{ x: '100%', opacity: 0 }}
+              initial={{ x: '100%', opacity: 0.5 }}
               animate={{ x: 0, opacity: 1 }}
-              exit={{ x: '100%', opacity: 0 }}
+              exit={{ x: '100%', opacity: 0.5 }}
               transition={{ 
-                type: 'spring', 
-                damping: 25, 
-                stiffness: 300,
-                duration: 0.3
+                type: 'tween',
+                duration: 0.4,
+                ease: [0.25, 0.46, 0.45, 0.94]
               }}
               style={{
                 position: 'fixed',
                 right: 0,
                 top: 0,
-                width: '320px',
+                width: '340px',
+                maxWidth: '85vw',
                 height: '100%',
-                background: '#0a0a0f',
+                background: 'linear-gradient(180deg, #0a0e1a 0%, #0d1225 50%, #0a0e1a 100%)',
                 zIndex: 999,
-                padding: '24px 20px',
                 overflowY: 'auto',
-                borderLeft: '1px solid #1a1a2e'
+                borderLeft: '1px solid rgba(28, 133, 234, 0.15)',
+                boxShadow: '-20px 0 60px rgba(0,0,0,0.8), -5px 0 30px rgba(28,133,234,0.05)'
               }}
             >
-              <nav className="tgmobile__menu-box">
-                {/* Close Button */}
-                <div className="close-btn" onClick={closeMobileMenu} style={{
-                  textAlign: 'right',
-                  cursor: 'pointer',
-                  color: '#ffffff',
-                  fontSize: '24px',
-                  padding: '4px'
+              <nav className="tgmobile__menu-box" style={{
+                padding: '0'
+              }}>
+                
+                {/* ✅ Premium Header - Different Color */}
+                <div className="sidebar-header" style={{ 
+                  background: 'linear-gradient(135deg, #0d1b3e 0%, #1a2d5e 50%, #0d1b3e 100%)',
+                  padding: '24px 24px 20px',
+                  borderBottom: '1px solid rgba(28, 133, 234, 0.2)',
+                  position: 'relative',
+                  overflow: 'hidden'
                 }}>
-                  <X size={24} />
+                  
+                  {/* Logo + Close Button */}
+                  <div style={{ 
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    position: 'relative',
+                    zIndex: 1
+                  }}>
+                    <Link to="/" onClick={closeMobileMenu} style={{ flexShrink: 0 }}>
+                      <img src={logo} alt="Logo" style={{ 
+                        maxHeight: '42px',
+                        filter: 'brightness(1.1)'
+                      }} />
+                    </Link>
+                    
+                    {/* Close Button - Premium */}
+                    <motion.div 
+                      onClick={closeMobileMenu} 
+                      whileHover={{ scale: 1.1, rotate: 90 }}
+                      whileTap={{ scale: 0.9 }}
+                      style={{
+                        cursor: 'pointer',
+                        color: '#ffffff',
+                        padding: '8px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        borderRadius: '12px',
+                        background: 'rgba(255,255,255,0.08)',
+                        border: '1px solid rgba(255,255,255,0.1)',
+                        width: '44px',
+                        height: '44px',
+                        transition: 'all 0.3s ease',
+                        backdropFilter: 'blur(10px)'
+                      }}
+                    >
+                      <X size={22} />
+                    </motion.div>
+                  </div>
+
+
                 </div>
                 
-                {/* Logo */}
-                <div className="nav-logo" style={{ 
-                  marginBottom: '30px',
-                  paddingBottom: '20px',
-                  borderBottom: '1px solid #1a1a2e'
+                {/* Navigation Links - Premium */}
+                <div className="tgmobile__menu-outer" style={{
+                  padding: '16px 20px'
                 }}>
-                  <Link to="/" onClick={closeMobileMenu}>
-                    <img src={logo} alt="Logo" style={{ maxHeight: '40px' }} />
-                  </Link>
-                </div>
-                
-                {/* Navigation Links */}
-                <div className="tgmobile__menu-outer">
                   <ul className="navigation" style={{
                     listStyle: 'none',
                     padding: 0,
                     margin: 0
                   }}>
-                    {navItems.map((item) => {
+                    {navItems.map((item, index) => {
                       const isActive = location.pathname === item.path;
                       return (
                         <motion.li 
                           key={item.id} 
                           className={isActive ? 'active' : ''} 
                           style={{
-                            borderBottom: '1px solid #1a1a2e',
-                            padding: '14px 0'
+                            marginBottom: '4px',
+                            borderRadius: '12px',
+                            background: isActive ? 'rgba(28, 133, 234, 0.12)' : 'transparent',
+                            border: isActive ? '1px solid rgba(28, 133, 234, 0.2)' : '1px solid transparent',
+                            transition: 'all 0.3s ease',
+                            overflow: 'hidden'
                           }}
-                          whileHover={{ x: 5 }}
-                          transition={{ type: 'spring', stiffness: 400 }}
+                          initial={{ opacity: 0, x: 30 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ 
+                            delay: index * 0.06,
+                            duration: 0.3,
+                            ease: [0.25, 0.46, 0.45, 0.94]
+                          }}
+                          whileHover={{
+                            background: 'rgba(255,255,255,0.05)',
+                            x: 5
+                          }}
                         >
                           <Link
                             to={item.path}
                             className="section-link"
                             onClick={closeMobileMenu}
                             style={{
-                              color: isActive ? '#1c85ea' : '#ffffff',
+                              color: isActive ? '#4facfe' : '#e4e4e7',
                               textDecoration: 'none',
-                              fontSize: '16px',
-                              fontWeight: isActive ? 'bold' : 'normal',
-                              display: 'block',
-                              transition: 'color 0.3s ease'
+                              fontSize: '15px',
+                              fontWeight: isActive ? '600' : '400',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'space-between',
+                              padding: '14px 18px',
+                              transition: 'all 0.3s ease',
+                              letterSpacing: '0.3px'
                             }}
                           >
-                            {item.label}
+                            <span>{item.label}</span>
+                            {isActive && (
+                              <motion.div
+                                initial={{ scale: 0 }}
+                                animate={{ scale: 1 }}
+                                transition={{ type: 'spring', stiffness: 500 }}
+                              >
+                                <ChevronRight size={18} style={{ color: '#4facfe' }} />
+                              </motion.div>
+                            )}
                           </Link>
                         </motion.li>
                       );
@@ -287,11 +355,16 @@ const Header = () => {
                   </ul>
                 </div>
 
-                {/* ✅ Connect Wallet Button - Blue Theme */}
+                {/* Divider */}
                 <div style={{
-                  marginTop: '30px',
-                  paddingTop: '20px',
-                  borderTop: '1px solid #1a1a2e'
+                  height: '1px',
+                  background: 'linear-gradient(90deg, transparent, rgba(28,133,234,0.2), transparent)',
+                  margin: '0 20px'
+                }} />
+
+                {/* Connect Wallet Button - Premium */}
+                <div style={{
+                  padding: '20px 20px 24px'
                 }}>
                   <ConnectButton.Custom>
                     {({
@@ -315,18 +388,20 @@ const Header = () => {
                               whileTap={{ scale: 0.98 }}
                               style={{
                                 width: '100%',
-                                padding: '14px 20px',
-                                background: '#1c85ea',
+                                padding: '16px 20px',
+                                background: 'linear-gradient(135deg, #1c85ea, #4facfe)',
                                 border: 'none',
-                                borderRadius: '12px',
+                                borderRadius: '14px',
                                 color: '#ffffff',
-                                fontWeight: 'bold',
-                                fontSize: '16px',
+                                fontWeight: '600',
+                                fontSize: '15px',
                                 cursor: 'pointer',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                gap: '10px'
+                                gap: '12px',
+                                boxShadow: '0 4px 20px rgba(28, 133, 234, 0.3)',
+                                transition: 'all 0.3s ease'
                               }}
                             >
                               <Wallet size={20} />
@@ -335,27 +410,34 @@ const Header = () => {
                           ) : chain?.unsupported ? (
                             <button onClick={openChainModal} style={{
                               width: '100%',
-                              padding: '14px 20px',
-                              background: 'red',
+                              padding: '16px 20px',
+                              background: 'linear-gradient(135deg, #dc3545, #ff6b7a)',
                               border: 'none',
-                              borderRadius: '12px',
+                              borderRadius: '14px',
                               color: '#fff',
-                              fontWeight: 'bold',
-                              fontSize: '16px',
-                              cursor: 'pointer'
+                              fontWeight: '600',
+                              fontSize: '15px',
+                              cursor: 'pointer',
+                              boxShadow: '0 4px 20px rgba(220, 53, 69, 0.3)'
                             }}>
                               Wrong Network
                             </button>
                           ) : (
-                            <div style={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'space-between',
-                              background: 'rgba(28,133,234,0.1)',
-                              border: '1px solid rgba(28,133,234,0.3)',
-                              borderRadius: '12px',
-                              padding: '12px 16px'
-                            }}>
+                            <motion.div 
+                              style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'space-between',
+                                background: 'rgba(28,133,234,0.08)',
+                                border: '1px solid rgba(28,133,234,0.2)',
+                                borderRadius: '14px',
+                                padding: '12px 16px',
+                                backdropFilter: 'blur(10px)'
+                              }}
+                              initial={{ opacity: 0 }}
+                              animate={{ opacity: 1 }}
+                              transition={{ delay: 0.2 }}
+                            >
                               <div style={{
                                 display: 'flex',
                                 alignItems: 'center',
@@ -365,7 +447,7 @@ const Header = () => {
                                   width: '40px',
                                   height: '40px',
                                   borderRadius: '10px',
-                                  background: 'rgba(34,197,94,0.1)',
+                                  background: 'rgba(34,197,94,0.12)',
                                   display: 'flex',
                                   alignItems: 'center',
                                   justifyContent: 'center',
@@ -374,10 +456,10 @@ const Header = () => {
                                   <CheckCircle size={20} />
                                 </div>
                                 <div>
-                                  <span style={{ fontSize: '11px', color: '#71717a', display: 'block' }}>
+                                  <span style={{ fontSize: '10px', color: '#71717a', display: 'block', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                                     Connected
                                   </span>
-                                  <span style={{ fontSize: '14px', color: '#e4e4e7', fontWeight: 'bold' }}>
+                                  <span style={{ fontSize: '13px', color: '#e4e4e7', fontWeight: '600' }}>
                                     {account.address?.slice(0, 6)}...{account.address?.slice(-4)}
                                   </span>
                                 </div>
@@ -388,27 +470,92 @@ const Header = () => {
                                 whileTap={{ scale: 0.9 }}
                                 style={{
                                   padding: '8px',
-                                  borderRadius: '8px',
-                                  background: 'transparent',
-                                  border: 'none',
+                                  borderRadius: '10px',
+                                  background: 'rgba(255,255,255,0.05)',
+                                  border: '1px solid rgba(255,255,255,0.05)',
                                   color: '#71717a',
-                                  cursor: 'pointer'
+                                  cursor: 'pointer',
+                                  transition: 'all 0.3s ease'
                                 }}
                               >
                                 <LogOut size={18} />
                               </motion.button>
-                            </div>
+                            </motion.div>
                           )}
                         </div>
                       );
                     }}
                   </ConnectButton.Custom>
                 </div>
+
+                {/* Footer Text */}
+                <div style={{
+                  padding: '0 20px 20px',
+                  textAlign: 'center'
+                }}>
+                  <p style={{
+                    color: 'rgba(255,255,255,0.2)',
+                    fontSize: '10px',
+                    letterSpacing: '0.5px',
+                    textTransform: 'uppercase',
+                    margin: 0
+                  }}>
+                    © 2026 Foresight • Web3 Ecosystem
+                  </p>
+                </div>
               </nav>
             </motion.div>
           </>
         )}
       </AnimatePresence>
+
+      {/* ✅ CSS for responsive & animations */}
+      <style jsx>{`
+        @keyframes gradientMove {
+          0% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+          100% { background-position: 0% 50%; }
+        }
+
+        @media (max-width: 991px) {
+          .tgmenu__navbar-wrap {
+            display: none !important;
+          }
+          .mobile-nav-toggler {
+            display: block !important;
+          }
+        }
+        @media (min-width: 992px) {
+          .mobile-nav-toggler {
+            display: none !important;
+          }
+        }
+        
+        /* Smooth scroll for mobile menu */
+        .tgmobile__menu {
+          will-change: transform, opacity;
+          -webkit-overflow-scrolling: touch;
+        }
+        
+        .tgmobile__menu-backdrop {
+          will-change: opacity;
+        }
+
+        /* Scrollbar styling */
+        .tgmobile__menu::-webkit-scrollbar {
+          width: 3px;
+        }
+        .tgmobile__menu::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .tgmobile__menu::-webkit-scrollbar-thumb {
+          background: rgba(28, 133, 234, 0.3);
+          border-radius: 10px;
+        }
+        .tgmobile__menu::-webkit-scrollbar-thumb:hover {
+          background: rgba(28, 133, 234, 0.5);
+        }
+      `}</style>
     </header>
   );
 };
