@@ -151,37 +151,35 @@ export const DashboardView = ({
         />
       </div> */}
 
-      <div className="grid grid-cols-12 gap-4">
+<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+  
+  <div>
+    <div className="mb-5">
+      <SwapView
+        wallet={wallet}
+        onUpdateWallet={onUpdateWallet}
+        onAddTransaction={onAddTransaction}
+      />
+    </div>
+  </div>
 
-               <div className="col-span-4">
-          <div className="mb-5">
-            <SwapView
-              wallet={wallet}
-              onUpdateWallet={onUpdateWallet}
-              onAddTransaction={onAddTransaction}
-            />
-          </div>
-        </div> 
-        
+  <div>
+    <div className="mb-5">
+      <Stake
+        wallet={wallet}
+        onUpdateWallet={onUpdateWallet}
+        onAddTransaction={onAddTransaction}
+      />
+    </div>
+  </div>
 
-        <div className="col-span-4">
-          <div className="mb-5">
-            <Stake
-              wallet={wallet}
-              onUpdateWallet={onUpdateWallet}
-              onAddTransaction={onAddTransaction}
-            />
-          </div>
-        </div>
+  <div>
+    <div className="mb-5">
+      <Withdrawal/>
+    </div>
+  </div>
 
-        <div className="col-span-4">
-          <div className="mb-5">
-            <Withdrawal/>
-          </div>
-        </div>
-
-
-      </div>
+</div>
       
 
 
