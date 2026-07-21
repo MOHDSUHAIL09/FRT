@@ -105,7 +105,7 @@ const ReferModal = ({ isOpen, onClose, referralCode = 'FRT', userAddress = '' })
               <div className="p-4">
                 <div className="flex items-center gap-2 bg-zinc-900/50 rounded-xl border border-zinc-800 p-2">
                   <div className="flex-1 min-w-0">
-                    <p className="text-[10px] text-zinc-400 font-medium">Referral Link</p>
+                    {/* <p className="text-[10px] text-zinc-400 font-medium">Referral Link</p> */}
                     <p className="text-xs text-white font-mono truncate">
                       {referralLink}
                     </p>

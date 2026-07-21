@@ -39,9 +39,9 @@ const IncomePayout = ({
   const fee = parseFloat(amount) * 0.02 || 0;
   const isValidAmount = parseFloat(amount) >= MIN_WITHDRAWAL && parseFloat(amount) <= maxWithdrawal;
 
-  const handleMaxClick = () => {
-    setAmount(maxWithdrawal.toFixed(4));
-  };
+  // const handleMaxClick = () => {
+  //   setAmount(maxWithdrawal.toFixed(4));
+  // };
 
   const handlePayout = async () => {
     if (!wallet.connected) {
@@ -102,7 +102,7 @@ const IncomePayout = ({
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h3 className="text-xl font-bold text-white ">Income Withdrawal</h3>
+          <h3 className="text-xl font-bold text-white ">INCOME  WITHDRAWAL</h3>
         </div>
         <div className=" p-3 rounded-full border border-amber-500/20">
           <Wallet className="w-5 h-5 text-amber-500" />
@@ -117,12 +117,12 @@ const IncomePayout = ({
             ${availableBalance.toFixed(4)} FRT
           </span>
         </div>
-        <div className="flex justify-between items-center mt-2">
+        {/* <div className="flex justify-between items-center mt-2">
           <span className="text-zinc-400 text-sm">Min Withdrawal</span>
           <span className="text-emerald-400 font-semibold">
             ${MIN_WITHDRAWAL}
           </span>
-        </div>
+        </div> */}
       </div>
 
       {/* Amount Input */}
@@ -149,12 +149,12 @@ const IncomePayout = ({
             min="0"
             step="0.0001"
           />
-          <button
+          {/* <button
             onClick={handleMaxClick}
             className="absolute right-3 top-1/2 -translate-y-1/2 px-3 py-1 bg-amber-500/20 text-amber-500 rounded-lg text-xs font-bold hover:bg-amber-500/30 transition-all"
           >
             MAX
-          </button>
+          </button> */}
         </div>
       </div>
       {/* Payout Button */}
@@ -184,6 +184,13 @@ const IncomePayout = ({
         <AlertCircle className="inline w-3 h-3 mr-1" />
         Min Withdrawal ${MIN_WITHDRAWAL} • 2% Fee Applied
       </p> */}
+
+              <div className="flex items-center mt-2">
+          <span className="text-zinc-400 text-sm">Min Withdrawal: </span>
+          <span className="text-zinc-400 font-semibold ms-2">
+            ${MIN_WITHDRAWAL}
+          </span>
+        </div>
 
       {/* Status Messages */}
       {payoutStatus === 'success' && (

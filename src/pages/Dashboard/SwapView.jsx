@@ -166,8 +166,8 @@ export const info = () => {
 
                          <div style={styles.swapBox}>
                     <div style={styles.infoRow}>
-                        <span style={{color: "rgb(250, 204, 21)"}}> Sponsor ID:</span>
-                        <span className='text-emerald-400'> 0x123456...102452</span>
+                        <span style={{color: "rgb(250, 204, 21)"}}> Investment:</span>
+                        <span className='text-emerald-400'>  0.00</span>
                     </div>
                 </div>
 

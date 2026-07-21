@@ -28,7 +28,7 @@ const Navbar = () => {
     { id: 'DASHBOARD', label: 'Dashboard', path: '/dashboard', icon: <LayoutDashboard size={16} /> },
     { id: 'REFER', label: 'Refer', path: '/dashboard/refer', icon: <IconShare3 size={16} stroke={2} /> },
     { id: 'Liquidity', label: 'Liquidity', path: '/dashboard/Liquidity', icon: <IconHexagonPlus size={16} /> },
-    { id: 'HISTORY', label: 'History', path: '/dashboard/history', icon: <History size={16} /> },
+    // { id: 'HISTORY', label: 'History', path: '/dashboard/history', icon: <History size={16} /> },
   ];
 
   // ✅ Handle Refer Click - Modal open karega
