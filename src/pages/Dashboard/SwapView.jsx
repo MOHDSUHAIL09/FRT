@@ -163,6 +163,15 @@ export const info = () => {
                         <span className='text-emerald-400'> 0x123456...102452</span>
                     </div>
                 </div>
+
+                         <div style={styles.swapBox}>
+                    <div style={styles.infoRow}>
+                        <span style={{color: "rgb(250, 204, 21)"}}> Sponsor ID:</span>
+                        <span className='text-emerald-400'> 0x123456...102452</span>
+                    </div>
+                </div>
+
+                
             </div>
 
             {/* Global Animation Styles */}
