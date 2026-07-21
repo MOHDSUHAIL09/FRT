@@ -5,8 +5,10 @@ import {
 } from 'lucide-react';
 import { useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
 import { isAddress } from 'viem';
+import { useNavigate } from 'react-router-dom';
 
 const RegistrationModal = ({ isOpen, onClose, address, onSuccess, contractAddress, abi }) => {
+  const navigate = useNavigate();
   const [sponsorAddress, setSponsorAddress] = useState('');
   const [isCopied, setIsCopied] = useState(false);
   const [registrationError, setRegistrationError] = useState('');
@@ -17,46 +19,60 @@ const RegistrationModal = ({ isOpen, onClose, address, onSuccess, contractAddres
   const { writeContract, data: hash, isPending, error } = useWriteContract();
   const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({ hash });
 
-  // ✅ ✅ ✅ REF - Alert already show ho chuka hai ya nahi
-  const alertShownRef = useRef(false);
-  // ✅ Success handler - SIRF EK BAAR CHALE
+  // ✅ REFS - Track if already processed
+  const successHandledRef = useRef(false);
+
+  // ✅ ✅ ✅ FIXED: Success handler - DIRECT REDIRECT, NO ALERT
   useEffect(() => {
-    // ✅ Agar already success ho chuka hai toh return
-    if (alertShownRef.current) return;
+    // ✅ Agar already handled ho gaya toh return
+    if (successHandledRef.current) return;
     
-    if (isConfirmed) {
-      // ✅ Flag set karo - Alert dubara nahi aayega
-      alertShownRef.current = true;
+    if (isConfirmed && hash) {
+      // ✅ Flag set karo - Dobara nahi chalega
+      successHandledRef.current = true;
       
       setRegistrationSuccess(true);
-      setTxHash(hash || '');
-      // ✅ Alert - EK BAAR
-      alert('✅ Registration Successful! 🎉\n\nYou will be redirected to dashboard.');
+      setTxHash(hash);
       
+      // ✅ ✅ ✅ DIRECT REDIRECT - NO ALERT
       setTimeout(() => {
+        // ✅ Modal close karo
+        onClose();
+        
+        // ✅ Success callback
+        if (onSuccess) {
+          onSuccess(sponsorAddress);
+        }
+        
+        // ✅ ✅ ✅ DIRECT REDIRECT TO DASHBOARD
+        navigate('/dashboard', { replace: true });
+        
+        // ✅ Reset states
         setRegistrationSuccess(false);
         setSponsorAddress('');
         setTxHash('');
         setIsProcessing(false);
+        successHandledRef.current = false;
         
-        // ✅ Reset flag
-        alertShownRef.current = false;
-        
-        if (onSuccess) {
-          onSuccess(sponsorAddress);
-        }
-      }, 3000);
+      }, 1000); // ✅ 1 second wait for smooth UX
     }
-  }, [isConfirmed, onSuccess, hash, sponsorAddress]);
+  }, [isConfirmed, hash, onSuccess, sponsorAddress, onClose, navigate]);
 
-  // ✅ Error handler
+  // ✅ Error handler - SIRF EK BAAR
+  const errorHandledRef = useRef(false);
+  
   useEffect(() => {
-    if (error) {
-      console.error(' Registration error:', error);
+    if (error && !errorHandledRef.current) {
+      errorHandledRef.current = true;
+      console.error('❌ Registration error:', error);
       const errorMsg = error.message || 'Registration failed. Please try again.';
       setRegistrationError(errorMsg);
       setIsProcessing(false);
-      alert(` Registration Failed!\n\n${errorMsg}`);
+      
+      // ✅ Reset after 5 seconds
+      setTimeout(() => {
+        errorHandledRef.current = false;
+      }, 5000);
     }
   }, [error]);
 
@@ -66,6 +82,17 @@ const RegistrationModal = ({ isOpen, onClose, address, onSuccess, contractAddres
       setIsProcessing(true);
     }
   }, [isPending]);
+
+  // ✅ Reset success flag when modal closes
+  useEffect(() => {
+    if (!isOpen) {
+      successHandledRef.current = false;
+      errorHandledRef.current = false;
+      setRegistrationSuccess(false);
+      setRegistrationError('');
+      setIsProcessing(false);
+    }
+  }, [isOpen]);
 
   const copyAddress = () => {
     if (address) {
@@ -81,12 +108,13 @@ const RegistrationModal = ({ isOpen, onClose, address, onSuccess, contractAddres
     setTxHash('');
     setIsProcessing(true);
     
-    // ✅ Reset alert flag
-    alertShownRef.current = false;
+    // ✅ Reset flags
+    successHandledRef.current = false;
+    errorHandledRef.current = false;
+    
     if (!sponsorAddress) {
       const msg = 'Please enter sponsor address';
       setRegistrationError(msg);
-      alert(msg);
       setIsProcessing(false);
       return;
     }
@@ -94,7 +122,6 @@ const RegistrationModal = ({ isOpen, onClose, address, onSuccess, contractAddres
     if (!isAddress(sponsorAddress)) {
       const msg = 'Invalid sponsor address.';
       setRegistrationError(msg);
-      alert(msg);
       setIsProcessing(false);
       return;
     }
@@ -102,7 +129,6 @@ const RegistrationModal = ({ isOpen, onClose, address, onSuccess, contractAddres
     if (sponsorAddress.toLowerCase() === address?.toLowerCase()) {
       const msg = 'You cannot be your own sponsor';
       setRegistrationError(msg);
-      alert(msg);
       setIsProcessing(false);
       return;
     }
@@ -117,11 +143,10 @@ const RegistrationModal = ({ isOpen, onClose, address, onSuccess, contractAddres
         args: [sponsorAddress, userId],
       });
     } catch (err) {
-      console.error(' Registration error:', err);
+      console.error('❌ Registration error:', err);
       const msg = err.message || 'Registration failed. Please try again.';
       setRegistrationError(msg);
       setIsProcessing(false);
-      alert(` Error: ${msg}`);
     }
   };
 
@@ -182,7 +207,7 @@ const RegistrationModal = ({ isOpen, onClose, address, onSuccess, contractAddres
               </div>
             </div>
 
-            {/* Success Message */}
+            {/* Success Message - NO ALERT, only UI feedback */}
             {registrationSuccess && (
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
@@ -198,25 +223,9 @@ const RegistrationModal = ({ isOpen, onClose, address, onSuccess, contractAddres
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                   <Check size={20} color="#4ade80" />
                   <span style={{ color: '#4ade80', fontSize: '14px', fontWeight: '500' }}>
-                    Registration Successful! 🎉
+                    ✅ Registration Successful! Redirecting to dashboard...
                   </span>
                 </div>
-                {txHash && (
-                  <a 
-                    href={`https://bscscan.com/tx/${txHash}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{
-                      color: '#4facfe',
-                      fontSize: '12px',
-                      marginTop: '8px',
-                      display: 'block',
-                      wordBreak: 'break-all'
-                    }}
-                  >
-                    View Transaction →
-                  </a>
-                )}
               </motion.div>
             )}
 
@@ -382,7 +391,7 @@ const RegistrationModal = ({ isOpen, onClose, address, onSuccess, contractAddres
               {registrationSuccess ? (
                 <>
                   <Check size={20} />
-                  Registered! Redirecting...
+                  ✅ Redirecting...
                 </>
               ) : isProcessing || isConfirming ? (
                 <>
