@@ -1,12 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,100..900;1,100..900&family=Space+Grotesk:wght@300..700&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
 @import "tailwindcss";
 
-@theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Space Grotesk", sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
-}
-
 :root {
   --color-amber-500: #facc15;
 
@@ -170,3 +164,577 @@ th {
 td {
   font-size: 16px;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* ============================================================
+   LIQUIDITY DASHBOARD CSS
+   ============================================================ */
+
+/* Loading & Error */
+.liquidity-loading,
+.liquidity-error {
+    text-align: center;
+    padding: 60px 20px;
+    color: #8892b0;
+}
+
+.liquidity-loading i,
+.liquidity-error i {
+    font-size: 40px;
+    display: block;
+    margin-bottom: 15px;
+}
+
+.liquidity-loading i {
+    color: #f0b90b;
+}
+
+.liquidity-error i {
+    color: #f87171;
+}
+
+.liquidity-error {
+    color: #f87171;
+}
+
+.retry-btn {
+    background: #f0b90b;
+    color: #0d0f1c;
+    border: none;
+    padding: 10px 30px;
+    border-radius: 30px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 15px;
+    font-size: 14px;
+    transition: 0.3s;
+}
+
+.retry-btn:hover {
+    background: #f8d44d;
+    transform: scale(1.02);
+}
+
+/* Dashboard */
+.liquidity-dashboard {
+    width: 100%;
+}
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+.liquidity-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.liquidity-header h1 {
+    font-size: 28px;
+    background: linear-gradient(135deg, #f0b90b, #f8d44d);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.liquidity-header h1 i {
+    -webkit-text-fill-color: #f0b90b;
+}
+
+.header-badge {
+    background: #1e2337;
+    padding: 10px 20px;
+    border-radius: 30px;
+    font-size: 14px;
+    border: 1px solid #2a3050;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.live-dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #4ade80;
+}
+
+.update-time {
+    color: #8892b0;
+    font-size: 12px;
+    margin-left: 5px;
+}
+
+.update-time i {
+    margin-right: 4px;
+}
+
+/* ============================================================
+   STATS CARDS
+   ============================================================ */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.stat-card {
+    background: #151a2b;
+    padding: 20px 22px;
+    border-radius: 16px;
+    border: 1px solid #242b44;
+    transition: 0.3s;
+}
+
+.stat-card:hover {
+    border-color: #f0b90b;
+    transform: translateY(-3px);
+}
+
+.stat-label {
+    font-size: 14px;
+    color: #8892b0;
+    margin-bottom: 6px;
+}
+
+.stat-value {
+    font-size: 26px;
+    font-weight: 700;
+}
+
+.stat-value i {
+    font-size: 18px;
+    margin-right: 8px;
+    color: #f0b90b;
+}
+
+.stat-change {
+    font-size: 13px;
+    margin-top: 8px;
+    display: inline-block;
+    padding: 2px 12px;
+    border-radius: 20px;
+}
+
+.stat-change.green {
+    background: #0f2e1f;
+    color: #4ade80;
+}
+
+.stat-change.red {
+    background: #2e0f1a;
+    color: #f87171;
+}
+
+/* ============================================================
+   TOOLBAR
+   ============================================================ */
+.toolbar {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.search-box {
+    background: #151a2b;
+    border: 1px solid #242b44;
+    border-radius: 30px;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+    max-width: 380px;
+}
+
+.search-box input {
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-size: 14px;
+    width: 100%;
+    outline: none;
+}
+
+.search-box input::placeholder {
+    color: #4a5370;
+}
+
+.search-box i {
+    color: #8892b0;
+}
+
+.filter-btns {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.filter-btns button {
+    background: #151a2b;
+    border: 1px solid #242b44;
+    color: #b0b9d6;
+    padding: 8px 18px;
+    border-radius: 30px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.filter-btns button:hover,
+.filter-btns button.active {
+    background: #f0b90b;
+    color: #0d0f1c;
+    border-color: #f0b90b;
+    font-weight: 600;
+}
+
+.filter-btn-star {
+    background: #151a2b;
+    border: 1px solid #242b44;
+    color: #b0b9d6;
+    padding: 8px 18px;
+    border-radius: 30px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.filter-btn-star:hover {
+    border-color: #f0b90b;
+    color: #f0b90b;
+}
+
+/* ============================================================
+   POOL TABLE
+   ============================================================ */
+.pool-table {
+    background: #151a2b;
+    border-radius: 16px;
+    border: 1px solid #242b44;
+    overflow-x: auto;
+}
+
+.pool-table table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 750px;
+}
+
+.pool-table th {
+    text-align: left;
+    padding: 16px 18px;
+    font-size: 13px;
+    color: #8892b0;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid #242b44;
+}
+
+.pool-table td {
+    padding: 14px 18px;
+    border-bottom: 1px solid #1e2337;
+    font-size: 14px;
+}
+
+.pool-table tr:last-child td {
+    border-bottom: none;
+}
+
+.pool-table tr:hover td {
+    background: #1a2035;
+}
+
+.rank {
+    color: #4a5370;
+    font-weight: 600;
+    font-size: 12px;
+    width: 30px;
+}
+
+/* Pool Name */
+.pool-name {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.pool-icons {
+    display: flex;
+}
+
+.pool-icons i {
+    font-size: 22px;
+    margin-right: -6px;
+    background: #0d0f1c;
+    padding: 4px;
+    border-radius: 50%;
+}
+
+.pool-name span {
+    font-weight: 500;
+}
+
+/* Tags */
+.tag {
+    display: inline-block;
+    padding: 2px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.tag.v3 {
+    background: #1e2a4a;
+    color: #60a5fa;
+}
+
+.tag.v2 {
+    background: #2a1e3a;
+    color: #c084fc;
+}
+
+/* APR */
+.apr-value {
+    font-weight: 700;
+    color: #facc15;
+}
+
+/* Liquidity Cell */
+.liquidity-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.liquidity-high {
+    color: #4ade80;
+}
+
+.liquidity-medium {
+    color: #facc15;
+}
+
+.liquidity-low {
+    color: #f87171;
+}
+
+.liquidity-bar {
+    width: 120px;
+    height: 6px;
+    background: #1e2337;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.liquidity-fill {
+    height: 100%;
+    border-radius: 10px;
+    transition: width 0.6s ease;
+}
+
+/* Status Dot */
+.status-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 6px;
+}
+
+.status-dot.active {
+    background: #4ade80;
+}
+
+.status-dot.warning {
+    background: #facc15;
+}
+
+.status-dot.inactive {
+    background: #f87171;
+}
+
+/* No Data */
+.no-data {
+    text-align: center;
+    padding: 40px !important;
+    color: #8892b0;
+}
+
+.no-data i {
+    display: block;
+    font-size: 30px;
+    margin-bottom: 10px;
+    color: #4a5370;
+}
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+.liquidity-footer {
+    margin-top: 25px;
+    padding: 16px 22px;
+    background: #151a2b;
+    border-radius: 12px;
+    border: 1px solid #242b44;
+    color: #8892b0;
+    font-size: 13px;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.liquidity-footer i {
+    color: #f0b90b;
+}
+
+.color-high {
+    color: #4ade80;
+}
+
+.color-medium {
+    color: #facc15;
+}
+
+.color-low {
+    color: #f87171;
+}
+
+.footer-time {
+    margin: 0 8px;
+}
+
+.refresh-btn {
+    background: #1e2337;
+    border: 1px solid #2a3050;
+    color: #b0b9d6;
+    padding: 4px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: 0.3s;
+    margin-left: 5px;
+}
+
+.refresh-btn:hover {
+    background: #f0b90b;
+    color: #0d0f1c;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 768px) {
+    .liquidity-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .liquidity-header h1 {
+        font-size: 22px;
+    }
+
+    .header-badge {
+        font-size: 12px;
+        padding: 8px 16px;
+        flex-wrap: wrap;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+
+    .stat-value {
+        font-size: 20px;
+    }
+
+    .toolbar {
+        flex-direction: column;
+    }
+
+    .search-box {
+        max-width: 100%;
+    }
+
+    .pool-table th,
+    .pool-table td {
+        padding: 10px 12px;
+        font-size: 12px;
+    }
+
+    .liquidity-bar {
+        width: 80px;
+    }
+
+    .liquidity-footer {
+        flex-direction: column;
+        text-align: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .pool-table table {
+        min-width: 600px;
+    }
+
+    .pool-table th,
+    .pool-table td {
+        padding: 8px 10px;
+        font-size: 11px;
+    }
+
+    .pool-icons i {
+        font-size: 18px;
+    }
+
+    .liquidity-bar {
+        width: 60px;
+    }
+}
+
+
+

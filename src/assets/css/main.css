@@ -3,6 +3,7 @@
  * Copyright 2011-2023 The Bootstrap Authors
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
  */
+ @import url("https://fonts.googleapis.com/css2?family=Parkinsans:wght@300..800&amp;display=swap");
 :root,[data-bs-theme=light] {
     --bs-blue: #0d6efd;
     --bs-indigo: #6610f2;
@@ -226,7 +227,7 @@
 /*============================================
 /*  01. Theme Default CSS
 ==============================================*/
-@import url("https://fonts.googleapis.com/css2?family=Parkinsans:wght@300..800&amp;display=swap");
+
 :root {
     scroll-behavior: auto;
     --tg-body-font-family: 'Parkinsans', sans-serif;
@@ -315,7 +316,7 @@ a:focus,
 
 a:hover,
 button:hover {
-  color: var(--tg-primary-color);
+  /* color: var(--tg-primary-color); */
   text-decoration: none;
 }
 
@@ -7498,13 +7499,6 @@ blockquote cite {
 .copyright-text-two p a:hover {
   color: var(--tg-primary-color);
 }
-
-/*# sourceMappingURL=main.css.map */
-
-
-
-
-
 .tokenomics-chart {
     /* background: #060816; */
     color: #fff;

@@ -1,82 +1,190 @@
-import React, { useState, useEffect } from 'react';
-import Hero from './components/Landing/Hero';
-import Header from './components/common/Header';  
-import { DashboardView } from './pages/Dashboard/DashboardView'; 
-import { useAccount } from 'wagmi';
+// src/App.jsx
+//  API Call - Sirf address aur referrer_Id dynamic, baaki sab static
+
+import React, { useState, useEffect, useRef } from 'react';
+import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
+import { useAccount, useReadContract } from 'wagmi';
+import { isAddress } from 'viem';
+
+import LandingRoutes from './routes/LandingRoutes';
+import DashboardRoutes from './routes/DashboardRoutes';
+import RegistrationModal from './components/RegistrationModal';
+import { REGISTRATION_ABI } from './abi/registrationAbi';
+
+const 
+CONTRACT_ADDRESS = import.meta.env.VITE_CONTRACT_ADDRESS || '0xf8D1615a0Db38BcEf280B5DE5cb5036E2f2aDF11';
+const API_URL = 'https://frtapi-des-cen-3.onrender.com/api/Authentication/register';
 
 const App = () => {
-  const [currentTab, setCurrentTab] = useState('HOME');
-  const { address, isConnected } = useAccount();
+  const { isConnected, address } = useAccount();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [showModal, setShowModal] = useState(false);
+  const [isRegistered, setIsRegistered] = useState(false);
+  const [isChecking, setIsChecking] = useState(true);
+  const modalOpenedRef = useRef(false);
 
-  // 🔥 Sample data for dashboard
-  // const [walletData, setWalletData] = useState({
-  //   connected: false,
-  //   address: null,
-  //   balanceETH: 0,
-  //   balanceUSDT: 0,
-  //   balanceAPX: 0,
-  //   balanceWBNB: 0,
-  //   balanceETN: 0
-  // });
+  //  Check if user is registered
+  const { 
+    data: isUserRegistered, 
+    isLoading: checkingRegistration, 
+    error: regError,
+    refetch 
+  } = useReadContract({
+    address: CONTRACT_ADDRESS,
+    abi: REGISTRATION_ABI,
+    functionName: 'isRegistered',
+    args: [address],
+    query: {
+      enabled: !!address && address !== '0x' && isAddress(CONTRACT_ADDRESS),
+    },
+  });
 
-  // const [transactions, setTransactions] = useState([]);
-  // const [stakingData, setStakingData] = useState({
-  //   totalStaked: 0,
-  //   userStaked: 0,
-  //   pendingRewards: 0,
-  //   claimedRewards: 0,
-  //   currentAPY: 0,
-  //   tokenPriceUSD: 0
-  // });
+  console.log('📝 App - Is Registered:', isUserRegistered);
+  console.log('App - Error:', regError?.message);
 
-  // const [profileData, setProfileData] = useState({
-  //   registered: false,
-  //   username: '',
-  //   email: ''
-  // });
+  //  Update registration status
+  useEffect(() => {
+    if (address) {
+      setIsChecking(checkingRegistration);
+      if (!checkingRegistration) {
+        const contractReg = isUserRegistered === true;
+        const localReg = localStorage.getItem(`registered_${address}`) === 'true';
+        const isReg = contractReg || localReg;
+        
+        setIsRegistered(isReg);
+        console.log('📝 App - Registration Status:', isReg ? ' Registered' : 'Not Registered');
+        
+        if (isReg) {
+          setShowModal(false);
+          modalOpenedRef.current = false;
+        }
+      }
+    } else {
+      setIsChecking(false);
+      setIsRegistered(false);
+    }
+  }, [address, isUserRegistered, checkingRegistration]);
 
-  const handleTabChange = (tab) => {
-    setCurrentTab(tab);
+  //  Open modal when wallet connects
+  useEffect(() => {
+    if (isConnected && address && !isChecking && !isRegistered && !modalOpenedRef.current) {
+      console.log(' Opening registration modal...');
+      setShowModal(true);
+      modalOpenedRef.current = true;
+    }
+  }, [isConnected, address, isChecking, isRegistered]);
+
+  //    SIMPLE API CALL - Sirf address aur referrer_Id dynamic
+  const saveUserToDatabase = async (walletAddress, sponsorAddress) => {
+    console.log('📤 ===== API CALL START =====');
+    console.log('  Wallet Address:', walletAddress);
+    console.log('  Sponsor Address:', sponsorAddress);
+
+    try {
+      //    SIRF YEH DO FIELDS DYNAMIC HAIN
+      const requestBody = {
+        introRegNo: 0,                    //  Static
+        introSide: "R",                   //  Static
+        fName: "string",                  //  Static
+        lName: "string",                  //  Static
+        mobile: "123456",                 //  Static
+        email: "user@example.com",        //  Static
+        loginId: "string",                //  Static
+        password: "string",               //  Static
+        address: walletAddress,           //    WALLET ADDRESS (Dynamic)
+        affiliate_Level: 2147483647,      //  Static
+        referrer_Id: sponsorAddress || '', //    SPONSOR ADDRESS (Dynamic)
+        country: 91                       //  Static
+      };
+      const response = await fetch(API_URL, {
+        method: 'POST',
+        headers: {
+          'accept': '*/*',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody),
+      });
+
+      console.log('📥 Response Status:', response.status);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('API Error Response:', errorText);
+        
+        let errorMessage = 'Failed to save user to database';
+        try {
+          const errorData = JSON.parse(errorText);
+          errorMessage = errorData.message || errorData.result || errorMessage;
+        } catch {
+          errorMessage = errorText || errorMessage;
+        }
+        
+        throw new Error(errorMessage);
+      }
+
+      const data = await response.json();
+      console.log(' API Success:', data);
+      return data;
+
+    } catch (error) {
+      console.error('API Call Failed:', error.message);
+      return null;
+    }
   };
 
-  // 🔥 AUTO-REDIRECT TO DASHBOARD WHEN CONNECTED
-  useEffect(() => {
-    if (isConnected && currentTab === 'HOME') {
-      setCurrentTab('DASHBOARD');
+  //  Handle registration success - API Call + Redirect
+  const handleRegistrationSuccess = async (sponsorAddress) => {
+    console.log(' ===== REGISTRATION SUCCESS =====');
+    console.log('  Sponsor Address:', sponsorAddress);
+    
+    if (address) {
+      localStorage.setItem(`registered_${address}`, 'true');     
+      //  Step 2: API Call - Sirf address aur referrer_Id
+      console.log('📤 Calling API to save user...');
+      await saveUserToDatabase(address, sponsorAddress);
+      
+      //  Step 3: Update state
+      console.log('🔄 Updating state...');
+      setIsRegistered(true);
+      setShowModal(false);
+      modalOpenedRef.current = false;
+      
+      //  Step 4: Redirect to dashboard
+      console.log('🔄 Redirecting to dashboard...');
+      setTimeout(() => {
+        refetch();
+        navigate('/dashboard', { replace: true });
+      }, 500);
+    } else {
+      console.warn('⚠️ No wallet address found!');
     }
-    if (!isConnected && currentTab === 'DASHBOARD') {
-      setCurrentTab('HOME');
-    } 
-  }, [isConnected, currentTab]);
+  };
 
-  const renderContent = () => {
-    switch(currentTab) {
-      case 'HOME':
-        return <Hero onGetStarted={handleTabChange} isConnected={isConnected} />;
-      case 'DASHBOARD':
-        return (
-          <DashboardView 
-            // wallet={walletData}
-            // transactions={transactions}
-            // staking={stakingData}
-            // profile={profileData}
-            // onUpdateWallet={setWalletData}
-            // onAddTransaction={(tx) => setTransactions([tx, ...transactions])}
-          />
-        );
-      default:
-        return <Hero onGetStarted={handleTabChange} isConnected={isConnected} />;
+  const handleModalClose = () => {
+    if (isRegistered) {
+      setShowModal(false);
+      modalOpenedRef.current = false;
     }
   };
 
   return (
-    <div className="min-h-screen bg-[#111111]">
-      <Header
-        currentTab={currentTab}
-        onTabChange={handleTabChange}
+    <>
+      <Routes>
+        <Route path="/*" element={<LandingRoutes />} />
+        <Route path="/dashboard/*" element={<DashboardRoutes />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+      
+      <RegistrationModal 
+        isOpen={showModal} 
+        onClose={handleModalClose}
+        address={address}
+        onSuccess={handleRegistrationSuccess}
+        contractAddress={CONTRACT_ADDRESS}
+        abi={REGISTRATION_ABI}
       />
-      {renderContent()}
-    </div>
+    </>
   );
 };
 

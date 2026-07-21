@@ -13,6 +13,7 @@ import {
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useDisconnect, useAccount } from 'wagmi';
 import ReferModal from '../../pages/Dashboard/Refer';
+import { IconHexagonPlus } from '@tabler/icons-react';
 
 
 const Navbar = () => {
@@ -26,6 +27,7 @@ const Navbar = () => {
   const navItems = [
     { id: 'DASHBOARD', label: 'Dashboard', path: '/dashboard', icon: <LayoutDashboard size={16} /> },
     { id: 'REFER', label: 'Refer', path: '/dashboard/refer', icon: <IconShare3 size={16} stroke={2} /> },
+    { id: 'Liquidity', label: 'Liquidity', path: '/dashboard/Liquidity', icon: <IconHexagonPlus size={16} /> },
     { id: 'HISTORY', label: 'History', path: '/dashboard/history', icon: <History size={16} /> },
   ];
 

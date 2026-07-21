@@ -10,15 +10,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { config } from './wagmi';
 import '@rainbow-me/rainbowkit/styles.css';
 
-
-import './assets/css/main.css'
-// import './assets/css/swiper-bundle.min.css'
-// import './assets/css/fontawesome-all.min.css'
-// import './assets/css/default.css'
-// import './assets/css/default-icons.css'
-// import './assets/css/bootstrap.min.css'
-// import './assets/css/aos.css'
-// import './assets/css/animate.min.css'
+import './assets/css/main.css';
 
 const queryClient = new QueryClient();
 
@@ -27,7 +19,13 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
         <RainbowKitProvider>
-          <BrowserRouter>  {/* ✅ SIRF YAHAN */}
+          {/* ✅ BrowserRouter with future flags */}
+          <BrowserRouter
+            future={{
+              v7_startTransition: true,
+              v7_relativeSplatPath: true,
+            }}
+          >
             <App />
           </BrowserRouter>
         </RainbowKitProvider>

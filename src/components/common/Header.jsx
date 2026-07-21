@@ -1,16 +1,47 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { Wallet, LogOut, CheckCircle, Menu, X, ChevronRight } from 'lucide-react';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
-import { useAccount } from 'wagmi';
+import { useAccount, useReadContract } from 'wagmi';
+import { isAddress } from 'viem';
 
 import logo from '../../assets/img/logo/logo.png';
+import { REGISTRATION_ABI } from '../../abi/registrationAbi';
+
+const CONTRACT_ADDRESS = import.meta.env.VITE_CONTRACT_ADDRESS || '0xf8D1615a0Db38BcEf280B5DE5cb5036E2f2aDF11';
 
 const Header = () => {
-  const { isConnected } = useAccount();
+  const { isConnected, address } = useAccount();
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isRegistered, setIsRegistered] = useState(false);
+  const [isChecking, setIsChecking] = useState(true);
+
+  // ✅ Check if user is registered
+  const { data: isUserRegistered, isLoading: checkingRegistration } = useReadContract({
+    address: CONTRACT_ADDRESS,
+    abi: REGISTRATION_ABI,
+    functionName: 'isRegistered',
+    args: [address],
+    query: {
+      enabled: !!address && address !== '0x' && isAddress(CONTRACT_ADDRESS),
+    },
+  });
+
+  // ✅ Update registration status
+  useEffect(() => {
+    if (address) {
+      setIsChecking(checkingRegistration);
+      if (!checkingRegistration) {
+        const isReg = isUserRegistered === true;
+        setIsRegistered(isReg);
+      }
+    } else {
+      setIsChecking(false);
+      setIsRegistered(false);
+    }
+  }, [address, isUserRegistered, checkingRegistration]);
 
   const navItems = [
     { id: 'HOME', label: 'Home', path: '/' },
@@ -22,6 +53,9 @@ const Header = () => {
 
   const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
   const closeMobileMenu = () => setIsMobileMenuOpen(false);
+
+  // ✅ Check if user can access dashboard
+  const canAccessDashboard = isConnected && isRegistered;
 
   return (
     <header id="home">
@@ -40,7 +74,7 @@ const Header = () => {
 
                   {/* Logo - Left */}
                   <div className="logo" style={{ flexShrink: 0 }}>
-                    <Link to={isConnected ? '/dashboard' : '/'}>
+                    <Link to={canAccessDashboard ? '/dashboard' : '/'}>
                       <img src={logo} alt="Logo" style={{ height: '40px' }} />
                     </Link>
                   </div>
@@ -139,7 +173,7 @@ const Header = () => {
                                     </div>
                                     <div className="text-left leading-none hidden sm:block">
                                       <span className="text-[10px] text-zinc-500 font-mono block">
-                                        Connected
+                                        {canAccessDashboard ? 'Registered' : 'Connected'}
                                       </span>
                                       <span className="text-xs text-zinc-200 font-mono font-bold block">
                                         {account.address?.slice(0, 6)}...{account.address?.slice(-4)}
@@ -234,7 +268,7 @@ const Header = () => {
                 padding: '0'
               }}>
                 
-                {/* ✅ Premium Header - Different Color */}
+                {/* ✅ Premium Header */}
                 <div className="sidebar-header" style={{ 
                   background: 'linear-gradient(135deg, #0d1b3e 0%, #1a2d5e 50%, #0d1b3e 100%)',
                   padding: '24px 24px 20px',
@@ -258,11 +292,11 @@ const Header = () => {
                       }} />
                     </Link>
                     
-                    {/* Close Button - Premium */}
+                    {/* Close Button */}
                     <motion.div 
                       onClick={closeMobileMenu} 
                       whileHover={{ scale: 1.1, rotate: 90 }}
-                      whileTap={{ scale: 0.9 }}
+                      // whileTap={{ scale: 0.9 }}
                       style={{
                         cursor: 'pointer',
                         color: '#ffffff',
@@ -282,11 +316,9 @@ const Header = () => {
                       <X size={22} />
                     </motion.div>
                   </div>
-
-
                 </div>
                 
-                {/* Navigation Links - Premium */}
+                {/* Navigation Links */}
                 <div className="tgmobile__menu-outer" style={{
                   padding: '16px 20px'
                 }}>
@@ -304,8 +336,8 @@ const Header = () => {
                           style={{
                             marginBottom: '4px',
                             borderRadius: '12px',
-                            background: isActive ? 'rgba(28, 133, 234, 0.12)' : 'transparent',
-                            border: isActive ? '1px solid rgba(28, 133, 234, 0.2)' : '1px solid transparent',
+                            background: isActive ? 'rgba(28, 133, 234, 0.12)' : 'rgba(255,255,255,0.01',
+                            border: isActive ? '1px solid rgba(28, 133, 234, 0.2)' : '1px solid rgba(255,255,255,0.01',
                             transition: 'all 0.3s ease',
                             overflow: 'hidden'
                           }}
@@ -362,7 +394,7 @@ const Header = () => {
                   margin: '0 20px'
                 }} />
 
-                {/* Connect Wallet Button - Premium */}
+                {/* Connect Wallet Button */}
                 <div style={{
                   padding: '20px 20px 24px'
                 }}>
@@ -385,7 +417,7 @@ const Header = () => {
                             <motion.button
                               onClick={openConnectModal}
                               whileHover={{ scale: 1.02 }}
-                              whileTap={{ scale: 0.98 }}
+                              // whileTap={{ scale: 0.98 }}
                               style={{
                                 width: '100%',
                                 padding: '16px 20px',
@@ -457,7 +489,7 @@ const Header = () => {
                                 </div>
                                 <div>
                                   <span style={{ fontSize: '10px', color: '#71717a', display: 'block', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                                    Connected
+                                    {canAccessDashboard ? '✅ Registered' : 'Connected'}
                                   </span>
                                   <span style={{ fontSize: '13px', color: '#e4e4e7', fontWeight: '600' }}>
                                     {account.address?.slice(0, 6)}...{account.address?.slice(-4)}
@@ -467,7 +499,7 @@ const Header = () => {
                               <motion.button
                                 onClick={openAccountModal}
                                 whileHover={{ scale: 1.1 }}
-                                whileTap={{ scale: 0.9 }}
+                                // whileTap={{ scale: 0.9 }}
                                 style={{
                                   padding: '8px',
                                   borderRadius: '10px',
@@ -509,8 +541,8 @@ const Header = () => {
         )}
       </AnimatePresence>
 
-      {/* ✅ CSS for responsive & animations */}
-      <style jsx>{`
+      {/* ✅ CSS for responsive & animations - FIXED */}
+      <style>{`
         @keyframes gradientMove {
           0% { background-position: 0% 50%; }
           50% { background-position: 100% 50%; }
@@ -546,7 +578,7 @@ const Header = () => {
           width: 3px;
         }
         .tgmobile__menu::-webkit-scrollbar-track {
-          background: transparent;
+          background: "rgba(255,255,255,0)";
         }
         .tgmobile__menu::-webkit-scrollbar-thumb {
           background: rgba(28, 133, 234, 0.3);

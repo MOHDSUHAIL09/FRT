@@ -1,7 +1,11 @@
+// src/layouts/DashboardLayout.jsx
+// ✅ Dashboard Layout - Navbar + Content
+
 import React from 'react';
 import { Outlet } from 'react-router-dom';
 import { useAccount } from 'wagmi';
 import Navbar from '../components/dashboard/Navbar';
+
 
 const DashboardLayout = () => {
   const { isConnected } = useAccount();
@@ -15,15 +19,13 @@ const DashboardLayout = () => {
     );
   }
 
-  // Agar connected nahi hai toh null return (parent handle karega)
-  if (!isConnected) {
-    return null;
-  }
-
   return (
     <div className="min-h-screen bg-[#111111]">
+      {/* ✅ ✅ ✅ NAVBAR - SAB SE UPAR */}
       <Navbar />
-      <main className="px-1 md:px-8 ">
+      
+      {/* ✅ ✅ ✅ CONTENT */}
+      <main className="px-1 md:px-8">
         <Outlet />
       </main>
     </div>

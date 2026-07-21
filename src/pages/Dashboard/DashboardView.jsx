@@ -14,7 +14,9 @@ import {
   Award,
   Share2
 } from 'lucide-react';
-import { SwapView } from './SwapView';
+import SwapView from './SwapView.jsx';
+import Withdrawal from './withdrawal/Withdrawal';
+import Stake from './Stake';
 
 const DashboardCard = ({
   title,
@@ -139,37 +141,74 @@ export const DashboardView = ({
       </div>
 
       {/* 🔥 MOBILE: SwapView TOP, then Cards, then Table */}
-      
+
       {/* SwapView - Mobile pe SABSE UPPER */}
-      <div className="lg:hidden mb-6">
+      {/* <div className="lg:hidden mb-6">
         <SwapView
           wallet={wallet}
           onUpdateWallet={onUpdateWallet}
           onAddTransaction={onAddTransaction}
         />
+      </div> */}
+
+      <div className="grid grid-cols-12 gap-4">
+
+               <div className="col-span-4">
+          <div className="mb-5">
+            <SwapView
+              wallet={wallet}
+              onUpdateWallet={onUpdateWallet}
+              onAddTransaction={onAddTransaction}
+            />
+          </div>
+        </div> 
+        
+
+        <div className="col-span-4">
+          <div className="mb-5">
+            <Stake
+              wallet={wallet}
+              onUpdateWallet={onUpdateWallet}
+              onAddTransaction={onAddTransaction}
+            />
+          </div>
+        </div>
+
+        <div className="col-span-4">
+          <div className="mb-5">
+            <Withdrawal/>
+          </div>
+        </div>
+
+
       </div>
+      
 
-      {/* 2️⃣ Cards Grid - Mobile pe BEECH ME */}
+
+
+
+
+      
+      {/* 2️⃣ Cards Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-
         <DashboardCard
-          title="Total Portfolio Value"
+          title="Direct Income"
           value={wallet.connected ? `${totalPortfolioValue.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 4 })} FRT` : '0 FRT'}
-          trend="↗ +5.67%"
+          trend="↗ Earned from directs " 
           footerText="24h change"
           icon={<Wallet size={16} />}
         />
 
         <DashboardCard
-          title="Pending Rewards"
+          title="Level Income"
           value={wallet.connected ? `${(staking.pendingRewards || 0).toFixed(8)} FRT` : '0 FRT'}
-          trend="↗ Ready to claim"
-          footerText="Accumulated rewards"
+          trend="↗ From team levels"
+          footerText="Compounded Level rewards"
           icon={<Gift size={16} />}
         />
 
         <DashboardCard
-          title="Direct Income"
+          title="Sponser Income"
           value={wallet.connected && profile?.registered ? `${directIncome.toLocaleString()} FRT` : '0 FRT'}
           trend="↗ Earned from directs"
           footerText="Aggregate payouts from directs"
@@ -179,21 +218,21 @@ export const DashboardView = ({
         <DashboardCard
           title="FRT Token Price"
           value={`$${staking.tokenPriceUSD || 0}`}
-          trend="LP-derived price"
-          footerText="USD quote from PancakeSwap"
+          trend="↗ +5.67%"
+          footerText="FRT Live Token Price"
           icon={<DollarSign size={16} />}
         />
 
         <DashboardCard
-          title="Total ROI Earned"
+          title="Rewards"
           value={wallet.connected ? `${(staking.claimedRewards || 0).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 4 })} FRT` : '0 FRT'}
-          trend="↗ Since day one"
+          trend="↗ Ready to claim "
           footerText="Compounded staking rewards"
           icon={<Trophy size={16} />}
         />
 
         <DashboardCard
-          title="Level Rewards Earned"
+          title="Total Income"
           value={wallet.connected && profile?.registered ? `${levelRewards.toLocaleString()} FRT` : '0 FRT'}
           trend="↗ From team levels"
           footerText="Company pool distributions"
@@ -201,7 +240,7 @@ export const DashboardView = ({
         />
 
         <DashboardCard
-          title="Referral Income"
+          title="Payoutable"
           value={wallet.connected && profile?.registered ? `${referralIncome.toLocaleString()} FRT` : '0 FRT'}
           trend="↗ Lifetime referrals"
           footerText="Direct & indirect referrals"
@@ -209,9 +248,9 @@ export const DashboardView = ({
         />
 
         <DashboardCard
-          title="sponser Income"
+          title="Referrals Income"
           value={wallet.connected && profile?.registered ? `${directIncome.toLocaleString()} FRT` : '0 FRT'}
-          trend="↗ Earned from directs"
+          trend="↗ Lifetime referrals"
           footerText="Aggregate payouts from directs"
           icon={<Gift size={16} />}
         />
@@ -220,18 +259,8 @@ export const DashboardView = ({
 
       {/* 3️⃣ SWAP + TABLE Section - Desktop me side by side, Mobile me Table neeche */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mt-6">
-
-        {/* Left Side - SwapView (Desktop me dikhega, Mobile me hidden) */}
-        <div className="hidden lg:block lg:col-span-4">
-          <SwapView
-            wallet={wallet}
-            onUpdateWallet={onUpdateWallet}
-            onAddTransaction={onAddTransaction}
-          />
-        </div>
-
         {/* Right Side - Table (Mobile me neeche) */}
-        <div className="swaptable rounded-2xl lg:col-span-8">
+        <div className="swaptable rounded-2xl lg:col-span-12">
           <div className="rounded-2xl border border-zinc-800 p-4 h-full flex flex-col">
             <h3 className="text-sm font-bold text-white mb-4">Swap History</h3>
             <div className="flex-1 overflow-x-auto">
@@ -252,7 +281,7 @@ export const DashboardView = ({
                   {transactions.length === 0 ? (
                     <tr>
                       <td colSpan={8} className="text-center text-zinc-500">
-                        <div className="text-6xl mb-1" style={{marginTop: "100px"}}>📭</div>
+                        <div className="text-6xl mb-1" style={{ marginTop: "100px" }}>📭</div>
                         <p className="text-[20px]">No transactions yet</p>
                         <p className="text-[18px] text-zinc-600 mt-0.5">Start swapping to see your history</p>
                       </td>
@@ -266,13 +295,12 @@ export const DashboardView = ({
                           </div>
                         </td>
                         <td className="py-1.5 px-2">
-                          <td className={`px-1.5 py-0.5 rounded-lg font-bold ${
-                            tx.type === 'STAKE' ? 'bg-amber-500/10 text-amber-500' :
-                            tx.type === 'CLAIM' ? 'bg-emerald-500/10 text-emerald-400' :
-                            tx.type === 'BOND' ? 'bg-cyan-500/10 text-cyan-400' :
-                            tx.type === 'SWAP' ? 'bg-purple-500/10 text-purple-400' :
-                            'bg-zinc-500/10 text-zinc-400'
-                          }`}>
+                          <td className={`px-1.5 py-0.5 rounded-lg font-bold ${tx.type === 'STAKE' ? 'bg-amber-500/10 text-amber-500' :
+                              tx.type === 'CLAIM' ? 'bg-emerald-500/10 text-emerald-400' :
+                                tx.type === 'BOND' ? 'bg-cyan-500/10 text-cyan-400' :
+                                  tx.type === 'SWAP' ? 'bg-purple-500/10 text-purple-400' :
+                                    'bg-zinc-500/10 text-zinc-400'
+                            }`}>
                             {tx.type || 'TX'}
                           </td>
                         </td>
@@ -286,11 +314,10 @@ export const DashboardView = ({
                         <td className="py-1.5 px-2 text-zinc-300 text-[10px]">{tx.token || 'FRT'}</td>
                         <td className="py-1.5 px-2 text-zinc-500 text-[9px]">{tx.date || 'Just now'}</td>
                         <td className="py-1.5 px-2">
-                          <td className={`px-1.5 py-0.5 rounded-full font-bold ${
-                            tx.status === 'COMPLETED'
+                          <td className={`px-1.5 py-0.5 rounded-full font-bold ${tx.status === 'COMPLETED'
                               ? 'bg-emerald-500/10 text-emerald-400'
                               : 'bg-yellow-500/10 text-yellow-400'
-                          }`}>
+                            }`}>
                             {tx.status || 'PENDING'}
                           </td>
                         </td>
